@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from typing import Optional
 
 
 app = FastAPI()
@@ -9,23 +10,23 @@ def index():
 
 
 @app.get("/blog")
-def show():
-    return {'blog':{"all bloggs"}}
+def show(limit = 10,publish:bool = True,sort:Optional[str] = None):
+    if publish:
+        return {'blog':{f'{limit} blogs which are published'}}
+    else:
+        return {'blog': {f'{limit} from all blogs'}}
 
 '''
-in dynamic routingafter the path a variable within { } is declared and called 
-based on that
+query parameters are given for getting certain data from the db
+default values can be given along with optional ones too
+here the limit and publish is required and default vales are given 
+the sort is of optional and the default value is none as it is optional
 
-Order of the code matters in dynamic routing:
-    -if the path has same routes as of dynamic route which is declared below 
-    the dynamic route will not be considered 
-    -the dynamic route only be considered even if we call the other route
-
-    eg: route :blog/{id} is above the blog/undefined in the code and 
-        the blog/{id} only accepts the int as id so it return error when the undefined is given 
-        so defining the non-dynamic route before the dynamic can rectify this error
+fastapi differentiates between the path params and query params like
+if the params is declared in the path then it is treated as path params
+if the params is only declared in function or as in the query the it is treated as query params
 '''
 
 @app.get("/blog/{id}")
-def show_id(id):
+def show_id(id:int):
     return {'blog_id':id}
