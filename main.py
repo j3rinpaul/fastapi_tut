@@ -1,32 +1,49 @@
 from fastapi import FastAPI
-from typing import Optional
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name:str
+    age:int
+    gender:str|None = None
 
 
 app = FastAPI()
 
-@app.get("/")
-def index():
-    return {"Heyy"}
+'''
+Request body
+
+data from client towards the api
+
+a class having all the details of the data that should constitute the body is declared
+that class is being passed into the function as params
 
 
-@app.get("/blog")
-def show(limit = 10,publish:bool = True,sort:Optional[str] = None):
-    if publish:
-        return {'blog':{f'{limit} blogs which are published'}}
-    else:
-        return {'blog': {f'{limit} from all blogs'}}
+inside the async function we can use the class to obtain the values 
+the class can be converted to dict for json purposes
+
+the path and query params can also be transferred along with this
 
 '''
-query parameters are given for getting certain data from the db
-default values can be given along with optional ones too
-here the limit and publish is required and default vales are given 
-the sort is of optional and the default value is none as it is optional
 
-fastapi differentiates between the path params and query params like
-if the params is declared in the path then it is treated as path params
-if the params is only declared in function or as in the query the it is treated as query params
-'''
+@app.post('/details')
+async def post_details(item:Item):
+    item_dict = item.dict()
+    if item.age > 18:
+        item_dict.update({"class":"18plus"})
+    return item_dict
 
-@app.get("/blog/{id}")
-def show_id(id:int):
-    return {'blog_id':id}
+#path params
+#http://127.0.0.1:8000/detailed?items_id=34
+
+@app.post('/detailed')
+async def details(item:Item,items_id:int):
+    return {"item_id":items_id,**item.dict()}
+
+#query params + path params
+#http://127.0.0.1:8000/query/54?q=20
+@app.post('/query/{items_id}')
+async def querty(item:Item,items_id:int,q:str | None = None):
+    result = {"item_id": items_id, **item.dict()}
+    if q:
+        result.update({"q": q})
+    return result
