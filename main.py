@@ -1,4 +1,5 @@
 '''
+for query params
 `from fastapi import FastAPI
 
 app = FastAPI()
@@ -156,8 +157,8 @@ async def read_items(
 
 #Validations specific for strings:
 """
-min_length = declaring min length for the parameter
-max_length = declaring maximum length for the parmeter
-pattern - for regex
+~ min_length = declaring min length for the parameter
+~ max_length = declaring maximum length for the parmeter
+~ pattern - for regex
 
 """
